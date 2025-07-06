@@ -1,0 +1,7 @@
+# .gitignore
+
+# Ignoriere die Datei mit den geheimen Schlüsseln
+/app/private-env.php
+
+# Ignoriere Composer-Abhängigkeiten (falls du später Composer nutzt)
+/vendor/
