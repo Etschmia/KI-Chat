@@ -34,18 +34,18 @@ $chat_history = $_SESSION['chat_history'] ?? [];
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="bi bi-robot"></i> <?php echo $L['navbar_title']; ?></a>
+            <a class="navbar-brand d-flex align-items-center" href="#"><img src="images/simpsons_web_optimized.png" alt="Logo" style="height: 24px; margin-right: 8px;"> <?php echo $L['navbar_title']; ?></a>
             <a href="?new_chat=true" class="btn btn-outline-light"><?php echo $L['new_chat_button']; ?></a>
         </div>
     </nav>
 
-    <div class="container chat-container d-flex flex-column">
+    <div id="chat-container" class="container chat-container d-flex flex-column">
         <?php if (!empty($error_message)): ?>
             <div class="alert alert-danger"><?php echo $error_message; ?></div>
         <?php endif; ?>
 
         <?php if (empty($chat_history)): ?>
-            <div class="text-center text-muted mt-5">
+            <div id="welcome-message" class="text-center text-muted mt-5">
                 <h2><?php echo $L['welcome_headline']; ?></h2>
                 <p><?php echo $L['welcome_text']; ?></p>
             </div>
@@ -63,22 +63,62 @@ $chat_history = $_SESSION['chat_history'] ?? [];
 
     <div class="input-form-container">
         <div class="container">
-            <form method="POST" action="index.php">
+            <form id="chat-form" method="POST" action="index.php">
                 <div class="input-group">
-                    <textarea name="prompt" class="form-control" placeholder="<?php echo $L['textarea_placeholder']; ?>" rows="2" required autofocus></textarea>
-                    <button class="btn btn-primary" type="submit">
+                    <textarea id="prompt-textarea" name="prompt" class="form-control" placeholder="<?php echo $L['textarea_placeholder']; ?>" rows="2" required autofocus></textarea>
+                    <button id="submit-button" class="btn btn-primary" type="submit">
                         <i class="bi bi-send-fill"></i> <?php echo $L['send_button']; ?>
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <script>
-        window.onload = function() {
-            var chatContainer = document.querySelector('.chat-container');
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const promptTextarea = document.getElementById('prompt-textarea');
+        const submitButton = document.getElementById('submit-button');
+
+        // Scroll to bottom on initial page load
+        window.addEventListener('load', () => {
             chatContainer.scrollTop = chatContainer.scrollHeight;
-        };
+        });
+
+        // Handle form submission for instant feedback
+        chatForm.addEventListener('submit', (e) => {
+            const promptText = promptTextarea.value.trim();
+            if (promptText === '') {
+                return; // Let browser handle 'required' validation
+            }
+
+            // Hide welcome message if it exists
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'none';
+            }
+
+            // Disable form to prevent multiple submissions
+            promptTextarea.readOnly = true;
+            submitButton.disabled = true;
+            // Change button to show loading state
+            submitButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <?php echo $L['loading_text']; ?>`;
+
+            // Create and append a temporary user message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.textContent = promptText;
+            chatContainer.appendChild(userMessageDiv);
+
+            // Create and append a spinner message
+            const spinnerMessageDiv = document.createElement('div');
+            spinnerMessageDiv.className = 'chat-message model-message d-flex justify-content-center align-items-center';
+            spinnerMessageDiv.innerHTML = `<div class="spinner-border text-primary" role="status"><span class="visually-hidden"><?php echo $L['loading_text']; ?></span></div>`;
+            chatContainer.appendChild(spinnerMessageDiv);
+
+            // Scroll to the new messages
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
     </script>
 
 </body>
