@@ -3,9 +3,11 @@
 
 class Chat {
     private ApiClient $apiClient;
+    private Logger $logger;
 
-    public function __construct(ApiClient $apiClient) {
+    public function __construct(ApiClient $apiClient, Logger $logger) {
         $this->apiClient = $apiClient;
+        $this->logger = $logger;
     }
 
     /**
@@ -46,8 +48,12 @@ class Chat {
         $response = $this->apiClient->sendRequest($_SESSION['chat_history']);
 
         if ($response['success']) {
+            $modelResponse = $response['data'];
             // Erfolgreiche Antwort der API zum Verlauf hinzufügen
-            $_SESSION['chat_history'][] = ['role' => 'model', 'parts' => [['text' => $response['data']]]];
+            $_SESSION['chat_history'][] = ['role' => 'model', 'parts' => [['text' => $modelResponse]]];
+
+            // Interaktion loggen
+            $this->logger->log($prompt, $modelResponse);
         } else {
             // Fehler zurückgeben, um ihn auf der UI anzuzeigen
             return $response['data'];

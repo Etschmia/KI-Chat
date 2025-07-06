@@ -18,6 +18,7 @@ require_once APP_PATH . '/lib/Parsedown.php';
 // Controller-Klassen laden
 require_once APP_PATH . '/controller/ApiClient.php';
 require_once APP_PATH . '/controller/Chat.php';
+require_once APP_PATH . '/controller/Logger.php';
 
 // Globale Instanz des Markdown-Parsers erstellen
 $parsedown = new Parsedown();

@@ -6,8 +6,10 @@
 require_once __DIR__ . '/../app/bootstrap.php';
 
 // 2. Erstelle die notwendigen Objekte (Dependency Injection)
+$logDir = __DIR__ . '/../log';
+$logger = new Logger($logDir);
 $apiClient = new ApiClient(GEMINI_API_KEY, GEMINI_API_URL);
-$chatController = new Chat($apiClient);
+$chatController = new Chat($apiClient, $logger);
 
 // 3. Verarbeite die aktuelle Anfrage
 $error_message = $chatController->handleRequest();
@@ -83,6 +85,14 @@ $chat_history = $_SESSION['chat_history'] ?? [];
         // Scroll to bottom on initial page load
         window.addEventListener('load', () => {
             chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+
+        // Formular bei "Enter" senden, "Shift+Enter" für Zeilenumbruch erlauben
+        promptTextarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Verhindert das Einfügen einer neuen Zeile
+                chatForm.requestSubmit(); // Löst das 'submit'-Event des Formulars aus
+            }
         });
 
         // Handle form submission for instant feedback

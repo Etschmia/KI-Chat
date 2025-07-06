@@ -5,3 +5,9 @@
 
 # Ignoriere Composer-Abhängigkeiten (falls du später Composer nutzt)
 /vendor/
+
+# Ignoriere Betriebssystem-spezifische Dateien (z.B. von macOS)
+.DS_Store
+
+# Ignoriere das Log-Verzeichnis
+/log/
